@@ -21,9 +21,15 @@
     <ClCompile Include="darray.cpp">
       <Filter>Исходные файлы</Filter>
     </ClCompile>
+    <ClCompile Include="excpt.cpp">
+      <Filter>Исходные файлы</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="darray.h">
+      <Filter>Файлы заголовков</Filter>
+    </ClInclude>
+    <ClInclude Include="excpt.h">
       <Filter>Файлы заголовков</Filter>
     </ClInclude>
   </ItemGroup>

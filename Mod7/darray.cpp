@@ -1,5 +1,6 @@
 #include "darray.h"
-#include <exception>
+#include <iostream>
+
 int* IntArray::Init(const unsigned int capacity)
 {
 	int* ptr = nullptr;
@@ -7,8 +8,9 @@ int* IntArray::Init(const unsigned int capacity)
 	{
 		ptr = new int[capacity];
 	}
-	catch (const std::exception&)
+	catch (const std::bad_alloc& e)
 	{
+		std::cout << e.what();
 		return nullptr;
 	}
 	return ptr;
@@ -28,6 +30,19 @@ void IntArray::InitZero(const int border)
 	{
 		_Ptr[i] = 0;
 	}
+}
+
+void IntArray::voidGuard() const
+{
+	if (!_Ptr)
+		throw VoidException();
+	return;
+}
+
+void IntArray::borderGuard(const int iterator) const
+{
+	if (_Ptr + iterator < _Ptr || _Ptr + _size <= _Ptr + iterator)
+		throw BoundExpection();
 }
 
 IntArray::IntArray()
@@ -51,4 +66,64 @@ IntArray::IntArray(const unsigned int capacity, const unsigned int size)
 IntArray::~IntArray()
 {
 	delete[] _Ptr;
+}
+
+IntArray& IntArray::operator=(const IntArray& rhs)
+{
+
+	delete[] _Ptr;
+	try
+	{
+		_Ptr = Init(rhs._capacity);
+	}
+	catch (const std::exception& e)
+	{
+		std::cout << e.what();
+		_Ptr = nullptr;
+		return *this;
+	}
+	_size = rhs._size;
+	_capacity = rhs._capacity;
+
+	std::memcpy(_Ptr, rhs._Ptr, _size);
+	return *this;
+}
+
+IntArray& IntArray::operator=(IntArray&& rhs) noexcept
+{
+	_Ptr = rhs._Ptr;
+	_size = rhs._size;
+	_capacity = rhs._capacity;
+
+	rhs._Ptr = nullptr;
+	return *this;
+}
+
+int IntArray::operator[](const int i)
+{
+	try
+	{
+		voidGuard();
+		borderGuard(i);
+	}
+	catch (const std::exception& e)
+	{
+		std::cout << e.what();
+		return 0;
+	}
+	return _Ptr[i];
+}
+
+void IntArray::insert(const int position, const int value)
+{
+	try
+	{
+		voidGuard();
+		borderGuard(position);
+	}
+	catch (const std::exception& e)
+	{
+		std::cout << e.what();
+	}
+	_Ptr[position] = value;
 }
