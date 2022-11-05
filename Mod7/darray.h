@@ -10,7 +10,6 @@ private:
 private:
 	int* Init(const unsigned int capacity);
 	void InitZero();
-	void InitZero(const int border);
 	void voidGuard() const;
 	void borderGuard(const int i) const;
 
@@ -26,6 +25,7 @@ public:
 	IntArray& operator=(const IntArray& rhs);
 	IntArray& operator=(IntArray&& rhs) noexcept;
 	int operator[](const int i);
+	void resize(const int size);
 	void insert(const int position, const int value);
 	void remove(const int position);
 	void modify(const int position, const int value);

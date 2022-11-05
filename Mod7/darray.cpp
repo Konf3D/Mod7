@@ -24,14 +24,6 @@ void IntArray::InitZero()
 	}
 }
 
-void IntArray::InitZero(const int border)
-{
-	for (int i = 0; i < border; ++i)
-	{
-		_Ptr[i] = 0;
-	}
-}
-
 void IntArray::voidGuard() const
 {
 	if (!_Ptr)
@@ -66,7 +58,10 @@ IntArray::IntArray(const unsigned int capacity, const unsigned int size)
 IntArray::IntArray(const IntArray& rhs)
     :_Ptr(Init(rhs._capacity)),_size(rhs._size),_capacity(rhs._capacity)
 {
-    std::memcpy(_Ptr,rhs._Ptr,_capacity);
+    //std::memcpy(_Ptr,rhs._Ptr,_size); not working for some reasons
+
+	for (int i = 0; i < _size; ++i)
+		_Ptr[i] = rhs._Ptr[i];
 }
 
 IntArray::IntArray(IntArray&& rhs) noexcept
@@ -96,8 +91,10 @@ IntArray& IntArray::operator=(const IntArray& rhs)
 	}
 	_size = rhs._size;
 	_capacity = rhs._capacity;
-
-	std::memcpy(_Ptr, rhs._Ptr, _size);
+	
+    //std::memcpy(_Ptr,rhs._Ptr,_size); not working for some reasons
+	for (int i = 0; i < _size; ++i)
+		_Ptr[i] = rhs._Ptr[i];
 	return *this;
 }
 
@@ -126,8 +123,23 @@ int IntArray::operator[](const int i)
 	return _Ptr[i];
 }
 
+void IntArray::resize(const int capacity)
+{
+	int* tmp = Init(capacity);
+	if (!tmp)
+		return;
+
+	for (int i = 0; i < _size; ++i)
+		tmp[i] = _Ptr[i];
+	delete[] _Ptr;
+	_Ptr = tmp;
+	_capacity = capacity;
+}
+
 void IntArray::insert(const int position, const int value)
 {
+	if (_size == _capacity)
+		resize(_capacity * 2);
 	if (_size < _capacity)
 	{
 		for (int i = _size; i > position; --i)
@@ -137,19 +149,24 @@ void IntArray::insert(const int position, const int value)
 		_Ptr[position] = value;
 		++_size;
 	}
-
 }
 
 void IntArray::remove(const int position)
 {
-	if (_size < _capacity)
+	try
 	{
-		for (int i = position; i < _size-1; ++i)
-		{
-			_Ptr[i] = _Ptr[i + 1];
-		}
-		--_size;
+		voidGuard();
+		borderGuard(position);
 	}
+	catch (const std::exception& e)
+	{
+		std::cout << e.what();
+	}
+	for (int i = position; i < _size-1; ++i)
+	{
+		_Ptr[i] = _Ptr[i + 1];
+	}
+	--_size;
 }
 
 void IntArray::modify(const int position, const int value)
