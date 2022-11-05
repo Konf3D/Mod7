@@ -6,7 +6,7 @@ int* IntArray::Init(const unsigned int capacity)
 	int* ptr = nullptr;
 	try
 	{
-		ptr = new int[capacity];
+		ptr = new int[capacity]();
 	}
 	catch (const std::bad_alloc& e)
 	{
@@ -14,14 +14,6 @@ int* IntArray::Init(const unsigned int capacity)
 		return nullptr;
 	}
 	return ptr;
-}
-
-void IntArray::InitZero()
-{
-	for (int i = 0; i < _size; ++i)
-	{
-		_Ptr[i] = 0;
-	}
 }
 
 void IntArray::voidGuard() const
@@ -35,6 +27,21 @@ void IntArray::borderGuard(const int iterator) const
 {
 	if (_Ptr + iterator < _Ptr || _Ptr + _size <= _Ptr + iterator)
 		throw BoundExpection();
+}
+
+int IntArray::generalGuard(const int i)
+{
+	try
+	{
+		voidGuard();
+		borderGuard(i);
+	}
+	catch (const std::exception& e)
+	{
+		std::cout << e.what();
+		return 0;
+	}
+	return 1;
 }
 
 IntArray::IntArray()
@@ -51,8 +58,7 @@ IntArray::IntArray(const unsigned int capacity)
 IntArray::IntArray(const unsigned int capacity, const unsigned int size)
 	:_Ptr(Init(capacity)),_size(size),_capacity(capacity)
 {
-	if(_Ptr)
-		InitZero();
+
 }
 
 IntArray::IntArray(const IntArray& rhs)
@@ -110,17 +116,13 @@ IntArray& IntArray::operator=(IntArray&& rhs) noexcept
 
 int IntArray::operator[](const int i)
 {
-	try
-	{
-		voidGuard();
-		borderGuard(i);
-	}
-	catch (const std::exception& e)
-	{
-		std::cout << e.what();
-		return 0;
-	}
-	return _Ptr[i];
+	if(generalGuard(i))
+		return _Ptr[i];
+}
+
+int IntArray::getSize() const
+{
+	return _size;
 }
 
 void IntArray::resize(const int capacity)
@@ -153,15 +155,8 @@ void IntArray::insert(const int position, const int value)
 
 void IntArray::remove(const int position)
 {
-	try
-	{
-		voidGuard();
-		borderGuard(position);
-	}
-	catch (const std::exception& e)
-	{
-		std::cout << e.what();
-	}
+	if (!generalGuard(position))
+		return;
 	for (int i = position; i < _size-1; ++i)
 	{
 		_Ptr[i] = _Ptr[i + 1];
@@ -171,14 +166,27 @@ void IntArray::remove(const int position)
 
 void IntArray::modify(const int position, const int value)
 {
-	try
-	{
-		voidGuard();
-		borderGuard(position);
-	}
-	catch (const std::exception& e)
-	{
-		std::cout << e.what();
-	}
+	if (!generalGuard(position))
+		return;
 	_Ptr[position] = value;
+}
+
+void IntArray::push_back(const int value)
+{
+	this->insert(_size, value);
+}
+
+void IntArray::push_front(const int value)
+{
+	this->insert(0, value);
+}
+
+int IntArray::search(int value) const
+{
+	for (int i = 0; i < _size; ++i)
+	{
+		if (_Ptr[i] == value)
+			return i;
+	}
+	return -1;
 }

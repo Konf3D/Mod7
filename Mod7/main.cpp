@@ -2,13 +2,12 @@
 #include <iostream>
 int main()
 {
-	//Создание контейнера				Create container
 	IntArray myArray(10, 5);
 
 
-	//Изменение элементов				Modification of the elements
 	std::cout << "Filled array\n";
-	for (int i = 0; i < 5; ++i)
+
+	for (int i = 0; i < myArray.getSize(); ++i)
 	{
 		myArray.modify(i, i * 2);
 		std::cout << i << "->" << myArray[i] << '\n';
@@ -16,31 +15,36 @@ int main()
 	std::cout << "\nFlushed array\n";
 
 	
-	//Удаление элементов				Removal of the elemets
 	myArray.remove(1);
-	myArray.remove(4);
-	for (int i = 0; i < 3; ++i)
+	myArray.remove(3);
+	for (int i = 0; i < myArray.getSize(); ++i)
 	{
 		std::cout << i << "->" << myArray[i] << '\n';
 	}
 
-	//Копирование экземпляра класса		Copy of the array class
 	IntArray copy = myArray;
 
 
-	//Вставка элементов					Insertion of the elements
 	std::cout << "\nRefilled array\n";
-	for (int i = 0; i < 5; ++i)
+
+	const int tmpSize = myArray.getSize();
+	for (int i = 0; i < tmpSize; ++i) // getSize evokes infinite loop
 	{
 		myArray.insert(i, i * 2);
 		std::cout << i << "->" << myArray[i] << '\n';
 	}
 
-	// Копия экзепляра класса					Copy of the array
-	std::cout << "\nCopy of the array after removal of elements\n";
-	for (int i = 0; i < 3; ++i)
+	for (int i = 0; i < copy.getSize(); ++i)
 	{
 		std::cout << i << "->" << copy[i] << '\n';
 	}
-
+	copy.push_back(1337);
+	copy.push_front(34);
+	
+	std::cout << "\nGet index of each elemet\n";
+	for (int i = 0; i < copy.getSize(); ++i)
+	{
+		std::cout << copy[i] << "->" << copy.search(copy[i]) << '\n';
+	}
+	
 }
