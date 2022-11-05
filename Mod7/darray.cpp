@@ -63,6 +63,18 @@ IntArray::IntArray(const unsigned int capacity, const unsigned int size)
 		InitZero();
 }
 
+IntArray::IntArray(const IntArray& rhs)
+    :_Ptr(Init(rhs._capacity)),_size(rhs._size),_capacity(rhs._capacity)
+{
+    std::memcpy(_Ptr,rhs._Ptr,_capacity);
+}
+
+IntArray::IntArray(IntArray&& rhs) noexcept
+	:_Ptr(rhs._Ptr), _size(rhs._size), _capacity(rhs._capacity)
+{
+	rhs._Ptr = nullptr;
+}
+
 IntArray::~IntArray()
 {
 	delete[] _Ptr;
@@ -115,6 +127,32 @@ int IntArray::operator[](const int i)
 }
 
 void IntArray::insert(const int position, const int value)
+{
+	if (_size < _capacity)
+	{
+		for (int i = _size; i > position; --i)
+		{
+			_Ptr[i] = _Ptr[i - 1];
+		}
+		_Ptr[position] = value;
+		++_size;
+	}
+
+}
+
+void IntArray::remove(const int position)
+{
+	if (_size < _capacity)
+	{
+		for (int i = position; i < _size-1; ++i)
+		{
+			_Ptr[i] = _Ptr[i + 1];
+		}
+		--_size;
+	}
+}
+
+void IntArray::modify(const int position, const int value)
 {
 	try
 	{

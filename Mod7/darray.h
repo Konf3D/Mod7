@@ -18,6 +18,8 @@ public:
 	IntArray();
 	IntArray(const unsigned int capacity);
 	IntArray(const unsigned int capacity, const unsigned int size);
+	IntArray(const IntArray& rhs);
+	IntArray(IntArray&& rhs) noexcept;
 	~IntArray();
 
 public:
@@ -25,4 +27,8 @@ public:
 	IntArray& operator=(IntArray&& rhs) noexcept;
 	int operator[](const int i);
 	void insert(const int position, const int value);
+	void remove(const int position);
+	void modify(const int position, const int value);
+	//void push_back(const int value);
+	//void push_front(const int value);
 };
